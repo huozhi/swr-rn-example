@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "swr-rn-example",
+    "slug": "swr-rn-example",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "swr-rn-example"
+}
