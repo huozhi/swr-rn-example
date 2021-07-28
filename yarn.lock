@@ -2866,6 +2866,11 @@ depd@~1.1.2:
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
 
+dequal@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.2.tgz#85ca22025e3a87e65ef75a7a437b35284a7e319d"
+  integrity sha512-q9K8BlJVxK7hQYqa6XISGmBZbtQQWVXSrRrWreHC94rMt1QL/Impruc+7p2CYSYuVIUr+YCt6hjrs1kkdJRTug==
+
 destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
@@ -5978,6 +5983,13 @@ supports-color@^7.1.0:
   integrity sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
   dependencies:
     has-flag "^4.0.0"
+
+swr@^1.0.0-beta.9:
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-1.0.0-beta.9.tgz#50f228f354427f033253b5ec89514c08c9652ce9"
+  integrity sha512-0cF1j6RVYqa78Lq0L5hqK+vwjZtEXsWtB3Co2ZJmxKC9lY5+/Xq8XMGpe2+JYO140wRGfcrPKUEDIUQuS6wgoQ==
+  dependencies:
+    dequal "2.0.2"
 
 temp-dir@^1.0.0:
   version "1.0.0"

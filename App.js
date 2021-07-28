@@ -1,21 +1,125 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, AppState } from 'react-native'
+import useSWR, { createCache, SWRConfig } from 'swr'
+
+const randomInt = (range) => Math.floor(Math.random() * range)
+
+function Page() {
+  const key1 = 'hello'
+  const key2 = 'custom'
+  const key3 = 'change by time'
+  const key4 = 'change on foreground'
+  const { data: data1 } = useSWR(key1)
+  const { data: data2 } = useSWR(key2)
+  const { data: data3, mutate: mutateKeyTimer } = useSWR(key3, () => `${randomInt(200)}`, {
+    revalidateOnFocus: false
+  })
+  const { data: data4 } = useSWR(key4, () => `${randomInt(200)}`)
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => {
+        mutateKeyTimer()
+      }, 2000
+    )
+    return () => clearInterval(timer)
+  }, [key3])
+
+  const keyValuePairs = [
+    ['KEY', 'VALUE'],
+    [key1, data1],
+    [key2, data2],
+    [key3, data3],
+    [key4, data4],
+  ]
+
+  return (
+    <View style={styles.table}>
+      {keyValuePairs.map(([key, value]) => (
+        <View key={key} style={styles.row}>
+          <Text style={{fontWeight: 'bold'}}>{key}</Text>
+          <Text>{value}</Text>
+        </View>
+      ))}
+    </View>
+  )
+}
+
+function useSwrCache(initialState) {
+  const [{ cache, mutate }] = useState(() => {
+    return createCache(new Map(initialState), {
+      setupOnFocus(callback) {
+        let appState = AppState.currentState
+        const onAppStateChange = nextAppState => {
+          if (appState.match(/inactive|background/) && nextAppState === 'active') {
+            callback()
+          }
+          console.log('state change', nextAppState)
+          appState = nextAppState
+        }
+        AppState.addEventListener('change', onAppStateChange)
+        return () => {
+          AppState.removeEventListener('change', onAppStateChange)
+        }
+      },
+      setupOnReconnect() {
+        /* Implement with your network state provider */ 
+      }
+    })
+  })
+  return { cache, mutate }
+}
+
+function SWRCachePage() {
+  console.log('render with cache')
+  const { cache } = useSwrCache([
+    ['hello', 'swr'],
+    ['custom', 'cache']
+  ])
+  return (
+    <SWRConfig 
+      value={{ 
+        cache,
+        isOnline() { return true },
+        isVisible() { return true },
+      }}
+    >
+      <Page />
+    </SWRConfig>
+  )
+}
+
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <SWRCachePage />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
+    flex: 1,
   },
-});
+  table: {
+    maxHeight: 120,
+    alignSelf: 'center',
+    alignItems: 'stretch',
+  },
+  row: {
+    flex: 1, 
+    alignSelf: 'stretch',
+    justifyContent: 'space-between', 
+    flexDirection: 'row',
+    width: 200,
+  },
+  cell: { 
+    flex: 1, 
+    alignSelf: 'stretch',
+  },
+})
