@@ -80,8 +80,8 @@ function SWRCachePage() {
     <SWRConfig 
       value={{ 
         cache,
-        isOnline() { return true },
-        isVisible() { return true },
+        isOnline() { return true /* customize with your own condition */ },
+        isVisible() { return true /* customize with your own condition */ },
       }}
     >
       <Page />
