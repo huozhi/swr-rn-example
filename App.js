@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View, AppState } from 'react-native'
-import useSWR, { createCache, SWRConfig } from 'swr'
+import useSWR, { SWRConfig } from 'swr'
 
 const randomInt = (range) => Math.floor(Math.random() * range)
 
@@ -45,43 +45,35 @@ function Page() {
   )
 }
 
-function useSwrCache(initialState) {
-  const [{ cache, mutate }] = useState(() => {
-    return createCache(new Map(initialState), {
-      setupOnFocus(callback) {
-        let appState = AppState.currentState
-        const onAppStateChange = nextAppState => {
-          if (appState.match(/inactive|background/) && nextAppState === 'active') {
-            callback()
-          }
-          console.log('state change', nextAppState)
-          appState = nextAppState
-        }
-        AppState.addEventListener('change', onAppStateChange)
-        return () => {
-          AppState.removeEventListener('change', onAppStateChange)
-        }
-      },
-      setupOnReconnect() {
-        /* Implement with your network state provider */ 
-      }
-    })
-  })
-  return { cache, mutate }
-}
-
 function SWRCachePage() {
   console.log('render with cache')
-  const { cache } = useSwrCache([
-    ['hello', 'swr'],
-    ['custom', 'cache']
-  ])
+  
   return (
     <SWRConfig 
       value={{ 
-        cache,
+        provider: () => new Map([
+          ['hello', 'swr'],
+          ['custom', 'cache']
+        ]),
         isOnline() { return true /* customize with your own condition */ },
         isVisible() { return true /* customize with your own condition */ },
+        initFocus(callback) {
+          let appState = AppState.currentState
+          const onAppStateChange = nextAppState => {
+            if (appState.match(/inactive|background/) && nextAppState === 'active') {
+              callback()
+            }
+            console.log('state change', nextAppState)
+            appState = nextAppState
+          }
+          AppState.addEventListener('change', onAppStateChange)
+          return () => {
+            AppState.removeEventListener('change', onAppStateChange)
+          }
+        },
+        initReconnect() {
+          /* Implement with your network state provider */ 
+        }
       }}
     >
       <Page />

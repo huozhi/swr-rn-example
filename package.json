@@ -19,7 +19,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-unimodules": "~0.14.5",
     "react-native-web": "~0.13.12",
-    "swr": "^1.0.0-beta.9"
+    "swr": "^1.0.0-beta.15"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
