@@ -22,47 +22,72 @@ expo start
 
 Check the code details in [App.js](./App.js)
 
-## Showcase
+## Usage
 
-#### Initial State in Cache
+### Initial State in Cache
 
-Use `createCache` API to consume initial state for swr.
+Use `provider` option to consume initial state for SWR.
 
 ```jsx
-createCache(new Map(initialState), { /* ... provider options ... */ }
+<SWRConfig
+  value={{
+    provider: () => new Map(initialState)
+  }}
+>
 ```
 
-#### Revalidation during Application State Switching
+### Revalidation during Application State Switching
 
 Use `AppState` to determine if user is in the foreground, then decide wether to schedule a revalidation.
 
 ```jsx
-// Add RN provider options in `createCache`
-setupOnFocus(callback) {
-  let appState = AppState.currentState
-  const onAppStateChange = nextAppState => {
-    if (appState.match(/inactive|background/) && nextAppState === 'active') {
-      callback()
+import { AppState } from 'react-native'
+
+<SWRConfig
+  value={{
+    initFocus(revalidate) {
+      let appState = AppState.currentState
+      const onAppStateChange = nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          revalidate()
+        }
+        console.log('state change', nextAppState)
+        appState = nextAppState
+      }
+      AppState.addEventListener('change', onAppStateChange)
+      return () => {
+        AppState.removeEventListener('change', onAppStateChange)
+      }
     }
-    appState = nextAppState
-  }
-  AppState.addEventListener('change', onAppStateChange)
-  return () => {
-    AppState.removeEventListener('change', onAppStateChange)
-  }
-},
+  }}
+>
 ```
 
-#### Polyfill Runtime Conditions
+### Polyfill Runtime Conditions
 
 Use `option.isVisible()` and `option.isOnline()` to set your own bar for revalidation.
 
 ```jsx
 <SWRConfig
-  value={{ 
-    cache,
+  value={{
     isOnline() { return true /* customize with your own condition */ },
     isVisible() { return true /* customize with your own condition */ },
   }}
 >
+```
+
+Finally run your app with all customized configurations!
+
+```jsx
+<SWRConfig
+  value={{
+    provider,
+    initFocus,
+    initReconnect,
+    isOnline,
+    isVisible,
+  }}
+>
+  <App>
+</SWRConfig>
 ```

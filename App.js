@@ -6,7 +6,7 @@ const randomInt = (range) => Math.floor(Math.random() * range)
 
 function Page() {
   const key1 = 'hello'
-  const key2 = 'custom'
+  const key2 = 'initial'
   const key3 = 'change by time'
   const key4 = 'change on foreground'
   const { data: data1 } = useSWR(key1)
@@ -46,14 +46,12 @@ function Page() {
 }
 
 function SWRCachePage() {
-  console.log('render with cache')
-  
   return (
     <SWRConfig 
       value={{ 
         provider: () => new Map([
           ['hello', 'swr'],
-          ['custom', 'cache']
+          ['initialKey', 'initialValue']
         ]),
         isOnline() { return true /* customize with your own condition */ },
         isVisible() { return true /* customize with your own condition */ },
